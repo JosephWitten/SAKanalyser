@@ -1,4 +1,4 @@
-# Decryption-analyser
+# SAKanalyser - The Swiss Army Knife of analysing encryptions
 A tool for detecting and analysing basic encryption
 
 Syntax:
