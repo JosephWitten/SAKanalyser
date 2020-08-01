@@ -3,6 +3,12 @@ import string
 import collections
 import codecs
 
+#TO DO LIST/ OPTIONS:
+# Input - tick
+# caeser - tick
+# hex -  tick
+
+
 class colours:
     red = "\u001b[31m" #not this
     green = "\u001b[32m" #this
@@ -18,10 +24,13 @@ hexChars.append(",")
 hexChars.append(".")
 hexChars.append("x")
 hexChars.append("X")
-isHex = True
-optionsArray = ["-cC", "-e"]
+optionsArray = ["-cC", "-e", "-x"]
 helpArray = ["-h", "-H", "-help", "--help"]
+greenArray = []
+yellowArray = []
+redArray = []
 options = False
+hexResult = ""
 
 def printGuide():
     print("Syntax for this tool is as follows:\npython SAKA.py <options> <encryption>")
@@ -30,15 +39,51 @@ def printHelp():
     print("\n")
     print("-e: Input string. This is the encryption or string you want to analyse")
     print("-cC: Caeser Cipher. Show the results of the caeser chiper")
+    print("-x: Hex. Show the results of a hex decrypt")
     print("")
     exit()
 
 def printSummary():
-    print("{}".format(colours.blue))
+
+    #checkHex, append it the correct colour array
+    isHex = checkHex()
+    print(isHex)
+    if (isHex):
+        hexResult = doHex()
+        if (hexResult == False):
+            yellowArray.append("Hex")
+        else:
+            greenArray.append("Hex")
+    else:
+        redArray.append("Hex")
+    
+    #add caeser to yellow
+    yellowArray.append("Caeser")
+
+    print(colours.blue)
     print("{}General info{}".format(colours.underline, colours.reset))
     print("{}Your word is: \"{}\"".format(colours.blue, masterWord))
     print("Length: {}".format(len(masterWord)))
-    print("{}".format(colours.reset))
+    print(colours.reset)
+
+    #PRINT LIKELY ONES
+    print(colours.green)
+    for i in greenArray:
+        print("[+] " + i)
+    print(colours.reset)
+
+    #PRINT MAYBE ONES
+    print(colours.yellow)
+    for i in yellowArray:
+        print("[-] " + i)
+    print(colours.reset)
+
+    #PRINT NOT ONES
+    print(colours.red)
+    for i in redArray:
+        print("[x] " + i)
+    print(colours.reset)
+
     exit()
 
 arguments = sys.argv
@@ -46,17 +91,25 @@ print(arguments)
 
 
 def checkForOptions():
+    temp = False
     for i in optionsArray:
         if (i in arguments):
-            return True
-    return False
+            temp = True
+    return temp
 
 
 def executeOptions():
     if ("-cC" in arguments):
         caeser()
-        options = True
+        
 
+    if ("-x" in arguments):
+        result = doHex()
+        if (result == False):
+            print("Try a different decoder")
+        else:
+            print("{}{}{}{}".format(colours.underline, colours.green, "Hex decoded", colours.reset))
+            print(result)
 
 
     #caeser
@@ -87,31 +140,20 @@ def caeser():
         #print
         print("ROT {} is {} ".format(i, newWord))
     print("")
-
-
-
 def checkHex():
+    temp = True
     for i in range(0, len(masterWord)):
         if (masterWord[i] not in hexChars):
-            isHex = False
-    return True
-
+            temp = False
+    return temp
 def doHex():
-    print("-------------- Hex --------------")
-    if(isHex):
-        print("Your word could be hex")
         try:
             masterWordInstance = masterWord
             masterWordInstance = masterWordInstance.replace(" ", "")
-            print(masterWordInstance)
             decoded = codecs.decode(masterWordInstance, "hex")
-            print("It would convert into {}".format(decoded))
+            return decoded
         except:
-            print("try a different decoder")
-    else:
-        print("Your word is not hex")
-    print("---------------------------------")
-
+            return False
 
 #shows guide if run alone
 if (len(arguments) < 2):
